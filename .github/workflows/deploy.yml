@@ -1,0 +1,23 @@
+name: Deploy Model Service
+
+on:
+  push:
+    paths:
+      - "src/app.py"
+      - "Dockerfile"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: model-artifacts
+          path: artifacts/
+
+      - run: docker build -t ml-model .
+
+      - run: docker run -d -p 5000:5000 ml-model
