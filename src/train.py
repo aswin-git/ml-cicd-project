@@ -27,4 +27,4 @@ y_test.to_csv("artifacts/y_test.csv", index=False)
 with open("artifacts/latest.txt", "w") as f:
     f.write(str(version))
 
-print(f"Model trained and saved as {model_path}")
+print(f"Model trained and saved at {model_path}")
