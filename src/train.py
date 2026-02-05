@@ -5,7 +5,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 
 data = pd.read_csv("data/iris.csv")
-
+data = data.drop('Id', axis=1)
 X = data.drop("Species", axis=1)
 y = data["Species"]
 
