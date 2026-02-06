@@ -14,7 +14,7 @@ y_test = pd.read_csv("artifacts/y_test.csv")
 preds = model.predict(X_test)
 accuracy = accuracy_score(y_test, preds)
 
-print(f"Model accuracy: {accuracy}")
+print(f"Model accuracy : {accuracy}")
 
 THRESHOLD = 1.0
 
