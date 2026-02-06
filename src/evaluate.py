@@ -18,7 +18,7 @@ print(f"Model accuracy : {accuracy}")
 
 THRESHOLD = 0.8
 
-if accuracy < THRESHOLD:
+if accuracy <= THRESHOLD:
     print("Accuracy below threshold. Pipeline failed.")
     sys.exit(1)
 
