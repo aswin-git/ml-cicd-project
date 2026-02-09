@@ -1,6 +1,6 @@
 import time
 import joblib
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from prometheus_client import Counter, Histogram, generate_latest
 
 with open("artifacts/latest.txt") as f:
@@ -19,6 +19,10 @@ LATENCY = Histogram(
     "prediction_latency_seconds",
     "Prediction latency"
 )
+
+@app.route("/")
+def home():
+    return render_template("index.html")
 
 @app.route("/predict", methods=["POST"])
 def predict():
