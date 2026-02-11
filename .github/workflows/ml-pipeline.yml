@@ -46,11 +46,8 @@ jobs:
     # 7. Read semantic version from code
     - name: Read release version
       run: |
-        echo "RELEASE_VERSION=$(python - <<EOF
-from src import __version__
-print(__version__)
-EOF
-)" >> $GITHUB_ENV
+        python -c "from src import __version__; print(f'RELEASE_VERSION={__version__}')" >> $GITHUB_ENV
+
 
     # 8. Build Docker image
     - name: Build Docker image
