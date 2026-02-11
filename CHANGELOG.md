@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v1.0.0 (2026-02-11)
+
+### Features
+
+- Updated Versioning
+  ([`942599c`](https://github.com/aswin-git/ml-cicd-project/commit/942599c5ab8f94f826750078fd6455847f502ead))
+
+
 ## v0.2.0 (2026-02-11)
 
 ### Features
