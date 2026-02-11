@@ -5,67 +5,69 @@ on:
     branches: [ "main" ]
   workflow_dispatch:
 
-permissions:
-  contents: write   # REQUIRED for semantic-release
-
 jobs:
   build-train-deploy:
     runs-on: ubuntu-latest
 
     steps:
-    # 1. Checkout FULL git history (CRITICAL)
     - name: Checkout code
       uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
 
-    # 2. Setup Python
     - name: Setup Python
       uses: actions/setup-python@v5
       with:
         python-version: "3.9"
 
-    # 3. Install dependencies
     - name: Install dependencies
       run: pip install -r requirements.txt
 
-    # 4. Train model
     - name: Train model
-      run: python src/train.py
+      run: |
+        python src/train.py
+        echo "MODEL_VERSION=$(cat artifacts/latest.txt)" >> $GITHUB_ENV
 
-    # 5. Evaluate model
     - name: Evaluate model
       run: python src/evaluate.py
 
-    # 6. Semantic Release (versioning)
     - name: Semantic Release
       uses: python-semantic-release/python-semantic-release@v9
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
 
-    # 7. Read semantic version from code
-    - name: Read release version
-      run: |
-        python -c "from src import __version__; print(f'RELEASE_VERSION={__version__}')" >> $GITHUB_ENV
 
-
-    # 8. Build Docker image
     - name: Build Docker image
       run: |
         docker build \
-          -t ${{ secrets.DOCKERHUB_USERNAME }}/ml-model:${{ env.RELEASE_VERSION }} \
+          -t ${{ secrets.DOCKERHUB_USERNAME }}/ml-model:${{ env.MODEL_VERSION }} \
           -t ${{ secrets.DOCKERHUB_USERNAME }}/ml-model:latest \
           .
 
-    # 9. Login to Docker Hub
     - name: Login to Docker Hub
       run: |
         echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login \
           -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
-    # 10. Push Docker image
     - name: Push image to Docker Hub
       run: |
-        docker push ${{ secrets.DOCKERHUB_USERNAME }}/ml-model:${{ env.RELEASE_VERSION }}
+        docker push ${{ secrets.DOCKERHUB_USERNAME }}/ml-model:${{ env.MODEL_VERSION }}
         docker push ${{ secrets.DOCKERHUB_USERNAME }}/ml-model:latest
 
+    - name: Deploy to AWS EC2
+      uses: appleboy/ssh-action@v1
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
+          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/ml-model:latest
+          docker stop ml-model || true
+          docker rm ml-model || true
+          docker run -d \
+            --restart unless-stopped \
+            --name ml-model \
+            -p 5000:5000 \
+            ${{ secrets.DOCKERHUB_USERNAME }}/ml-model:latest
+
+
+  
