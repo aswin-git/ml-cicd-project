@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v0.2.0 (2026-02-11)
+
+### Features
+
+- Enforce conventional commits
+  ([`81ce9f0`](https://github.com/aswin-git/ml-cicd-project/commit/81ce9f04a678ae63488af585f579beecd420c51d))
+
+
 ## v0.1.0 (2026-02-11)
 
 ### Features
