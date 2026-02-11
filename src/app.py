@@ -42,5 +42,6 @@ def predict():
 @app.route("/metrics")
 def metrics():
     return generate_latest()
-
+  
+  
 app.run(host="0.0.0.0", port=5000)
