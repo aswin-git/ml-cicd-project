@@ -34,6 +34,15 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
 
+    - name: Read semantic version
+      run: |
+        echo "RELEASE_VERSION=$(python - <<EOF
+        from src import __version__
+        print(__version__)
+        EOF
+        )" >> $GITHUB_ENV
+
+
 
     - name: Build Docker image
       run: |
